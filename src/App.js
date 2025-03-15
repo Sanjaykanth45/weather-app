@@ -13,16 +13,20 @@ const WeatherApp = () => {
   const fetchWeather = async () => {
     try {
       setError("");
-      const response = await axios.get(`${API_URL}`, {
+      const response = await axios.get(API_URL, {
         params: {
           q: city,
           appid: API_KEY,
           units: "metric",
-          cnt: 7,
+          cnt: 40, // Get full data (5 days, 3-hour intervals)
         },
       });
 
-      const dailyForecast = response.data.list.filter((_, index) => index % 8 === 0);
+      // Extracting one entry per day (12:00 PM)
+      const dailyForecast = response.data.list.filter((entry) =>
+        entry.dt_txt.includes("12:00:00")
+      );
+
       setWeatherData(dailyForecast);
     } catch (err) {
       setError("City not found. Please try again.");
